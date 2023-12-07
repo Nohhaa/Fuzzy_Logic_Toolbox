@@ -3,6 +3,31 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+double triangularFuzzification(double x, double a, double b, double c)
+{
+    double slope;
+    double y;
+    // (a,b) (b,c)
+    slope = (c - b) / (b - a);
+    // Y = mx + c
+    double k = b - slope * a;
+    y = slope * x + k;
+    return y;
+}
+
+// Trapezoidal fuzzy set fuzzification function
+double trapezoidalFuzzification(double x, double a, double b, double c, double d)
+{
+    double slope;
+    double y;
+    // (a,b) (d,c)
+    slope = (c - b) / (d - a);
+    // Y = mx + c
+    double k = b - slope * a;
+    y = slope * x + k;
+    return y;
+}
+
 // AND Operator -> returning the minimal value.
 double AND(double x, double y)
 {
