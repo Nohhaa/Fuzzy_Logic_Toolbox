@@ -3,17 +3,18 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-double triangularFuzzification(double x, double a, double b, double c)
+double getfuzz(double crisp,double x1, double y1, double x2, double y2)
 {
     double slope;
     double y;
-    // (a,b) (b,c)
-    slope = (c - b) / (b - a);
-    // Y = mx + c
-    double k = b - slope * a;
-    y = slope * x + k;
+    slope = (y2 - y1) / (x2 - x1);
+    double b;
+
+    b=y1-(slope*x1);
+    y = slope * crisp + b;
     return y;
 }
+
 
 // Trapezoidal fuzzy set fuzzification function
 double trapezoidalFuzzification(double x, double a, double b, double c, double d)
@@ -139,6 +140,9 @@ private:
     vector<FuzzyVariable> variables;
     vector<pair<string,double>> crispvalues;
     vector<FuzzyRules> Rules;
+    vector<pair<pair<string,string>,double>> Fuzz;
+    vector<double> values;
+    vector<pair<string,double>> Inf;
 
 public:
     FuzzySystem(const string &systemName, const string &systemDescription)
@@ -166,6 +170,98 @@ public:
         cout << "Fuzzy System: " << name << endl;
         cout << "Description: " << description << endl;
     }
+    void Fuzzification() {
+        for (int i = 0; i < variables.size(); i++) {
+            if (variables[i].getType() == "IN") {
+                vector<FuzzySet> fset =variables[i].getFuzzySets();
+                for (int j = 0; j <fset.size(); j++) {
+                    for (int k = 0; k <crispvalues.size(); k++) {
+                        if (crispvalues[k].first==fset[j].variable)
+                        {
+                            double crisp=crispvalues[k].second,fuzz;
+                            if(fset[j].type=="TRI") {
+                                if((fset[j].v1!=fset[j].v2) && (fset[j].v2>=crisp &&crisp>=fset[j].v1) )
+                                {
+                                    fuzz=getfuzz(crisp,fset[j].v1,0,fset[j].v2,1);
+                                    Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+                                }
+                                if((fset[j].v1==fset[j].v2) && (fset[j].v1<=crisp && fset[j].v3>=crisp) )
+                                {
+                                    fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,0);
+                                    Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+
+                                }
+                                 if((fset[j].v3!=fset[j].v2) && (fset[j].v2<=crisp && fset[j].v3>=crisp) )
+                                {
+                                    fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,0);
+                                    Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+                                }
+
+                                }
+                        else
+                        {
+                            if((fset[j].v1!=fset[j].v2) && (fset[j].v2>=crisp &&crisp>=fset[j].v1) )
+                            {
+                                fuzz=getfuzz(crisp,fset[j].v1,0,fset[j].v2,1);
+                                Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+                            }
+                            if((fset[j].v1==fset[j].v2) && (fset[j].v1<=crisp && fset[j].v3>=crisp) )
+                            {
+                                fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,0);
+                                Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+
+                            }
+                            if((fset[j].v3!=fset[j].v2) && (fset[j].v2<=crisp && fset[j].v3>=crisp) )
+                            {
+                                fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,1);
+                                Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+                            }
+                            if((fset[j].v3!=fset[j].v4) && (fset[j].v3<=crisp && fset[j].v4>=crisp) )
+                            {
+                                fuzz=getfuzz(crisp,fset[j].v3,1,fset[j].v4,0);
+                                Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
+                            }
+
+                        }
+
+                    }
+                    }
+
+                }
+
+            }
+        }
+    }
+    //under development
+    void Inference()
+    {
+        string var,set,op="no",op2,var2,set2,outvar,outset;
+        int setint,outsetint;
+        double val1,val2;
+        double value;
+        for (int i = 0; i < Rules.size(); i++) {
+            FuzzyRules rule=Rules[i];
+            for (int j = 0; j < rule.variables.size(); j++) {
+                var=rule.variables[j];
+                set=rule.sets[j].first;
+                setint=rule.sets[j].second;
+                if(j<rule.ops.size()) {
+                    op = rule.ops[j];
+
+                }
+                for (int k = 1; k < Fuzz.size(); k++) {
+                    if (Fuzz[k].first.first == var && Fuzz[k].first.second == set) {
+                        val1 = Fuzz[k].second;
+                        if(setint==0)
+                        {
+                            val1=1-val1;
+                        }
+                        values.push_back(val1);
+                    }
+                }
+                }
+            }
+        }
 };
 
 int main()
