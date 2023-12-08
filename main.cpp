@@ -176,7 +176,7 @@ public:
                 vector<FuzzySet> fset =variables[i].getFuzzySets();
                 for (int j = 0; j <fset.size(); j++) {
                     for (int k = 0; k <crispvalues.size(); k++) {
-                        if (crispvalues[k].first==fset[j].variable)
+                        if (crispvalues[k].first==variables[i].getName())
                         {
                             double crisp=crispvalues[k].second,fuzz;
                             if(fset[j].type=="TRI") {
@@ -207,7 +207,7 @@ public:
                             }
                             if((fset[j].v1==fset[j].v2) && (fset[j].v1<=crisp && fset[j].v3>=crisp) )
                             {
-                                fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,0);
+                                fuzz=getfuzz(crisp,fset[j].v2,1,fset[j].v3,1);
                                 Fuzz.push_back({{variables[i].getName(),fset[j].variable},fuzz});
 
                             }
