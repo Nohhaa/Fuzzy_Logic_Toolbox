@@ -198,8 +198,8 @@ public:
     {
         for (int i = 0; i < Inf.size(); i++)
         {
-            cout << "Fuzzy set: " << Inf[i].first << endl;
-            cout << "Fuzzy value: " << Fuzz[i].second << endl;
+            cout << "INF set: " << Inf[i].first << endl;
+            cout << "INF value: " << Inf[i].second << endl;
         }
     }
     void Fuzzification()
@@ -224,11 +224,6 @@ public:
                                     Fuzz.push_back({{variables[i].getName(), fset[j].variable}, fuzz});
                                 }
                                 if ((fset[j].v2 <= crisp && fset[j].v3 >= crisp))
-                                {
-                                    fuzz = getfuzz(crisp, fset[j].v2, 1, fset[j].v3, 0);
-                                    Fuzz.push_back({{variables[i].getName(), fset[j].variable}, fuzz});
-                                }
-                                if ((fset[j].v3 != fset[j].v2) && (fset[j].v2 <= crisp && fset[j].v3 >= crisp))
                                 {
                                     fuzz = getfuzz(crisp, fset[j].v2, 1, fset[j].v3, 0);
                                     Fuzz.push_back({{variables[i].getName(), fset[j].variable}, fuzz});
@@ -267,10 +262,9 @@ public:
         double value;
         for (int i = 0; i < Rules.size(); i++)
         {
-            FuzzyRules rule = Rules[i];
+            FuzzyRules rule = Rules[i]; // rule
             vector<double> values;
             vector<string> ops = rule.ops; // and or and_not or_not
-            vector<string> outvar = rule.outVariables;
             vector<pair<string, double>> outset = rule.outSets;
             for (int j = 0; j < rule.variables.size(); j++)
             {
@@ -294,6 +288,7 @@ public:
                         }
                         values.push_back(val1);
                         found = true;
+                        break;
                     }
                 }
                 if (!found)
@@ -329,15 +324,14 @@ public:
                     if (outset[0].second == 0)
                         Final = 1 - Final;
                 }
-                cout << "-------------------" << endl;
-                cout << Value << " " << Value2 << " " << oper << " " << Final << endl;
-                cout << "-------------------" << endl;
+                // cout << "-------------------" << endl;
+                // cout << Value << " " << Value2 << " " << oper << " " << Final << endl;
+                // cout << "-------------------" << endl;
 
                 Inf.push_back({outset[0].first, Final});
             }
             else if (ops.size() == 3)
             {
-
                 double Value = values[0];
                 double Value2 = values[1];
                 double Value3 = values[2];
@@ -345,8 +339,8 @@ public:
                 double Final1;
                 double Final2;
                 string oper1 = ops[0];
-                string oper2 = ops[0];
-                string oper3 = ops[0];
+                string oper2 = ops[1];
+                string oper3 = ops[2];
                 if (oper1 == "and")
                 {
                     Final1 = AND(Value, Value2);
@@ -357,11 +351,11 @@ public:
                 }
                 else if (oper1 == "or")
                 {
-                    Final1 = OR(Value3, Value4);
+                    Final1 = OR(Value, Value2);
                 }
                 else
                 {
-                    Final1 = OR(Value3, 1 - Value4);
+                    Final1 = OR(Value, 1 - Value2);
                 }
 
                 if (oper3 == "and")
@@ -400,6 +394,11 @@ public:
                 if (outset[0].second == 0)
                     Final3 = 1 - Final3;
                 Inf.push_back({outset[0].first, Final3});
+                // cout << "AHNA FL RULES L KBERA : ";
+                // cout << Value << " " << oper1 << " " << Value2 << " " << Final1 << endl;
+                // cout << Value3 << " " << oper3 << " " << Value4 << " " << Final2 << endl;
+                // cout << oper2 << endl;
+                // cout << Final3 << endl;
             }
         }
     }
@@ -414,18 +413,25 @@ public:
                 vector<FuzzySet> fset = variables[i].getFuzzySets();
                 for (int j = 0; j < fset.size(); j++)
                 {
+                    // cout<<"fadya : ";
+                    // cout<<fset[j].variable<<endl;
                     if (fset[j].type == "TRI")
                     {
-                        total += (fset[j].v1 + fset[j].v2 + fset[j].v3) / 3;
-                        centroid.push_back({fset[j].set, total});
+                        total = (fset[j].v1 + fset[j].v2 + fset[j].v3) / 3;
+                        centroid.push_back({fset[j].variable, total});
                     }
                     else
                     {
-                        total += (fset[j].v1 + fset[j].v2 + fset[j].v3 + fset[j].v4) / 4;
-                        centroid.push_back({fset[j].set, total});
+                        total = (fset[j].v1 + fset[j].v2 + fset[j].v3 + fset[j].v4) / 4;
+                        centroid.push_back({fset[j].variable, total});
                     }
                 }
                 variables[i].addCentroid(centroid);
+                // cout<<"bos kda 3l cent: "<<endl;
+                // for (int j = 0; j < centroid.size(); j++)
+                // {
+                //     cout<<centroid[j].first<<" "<<centroid[j].second<<endl;
+                // }
             }
         }
     }
@@ -580,7 +586,7 @@ int main()
                         if (Fvariables[i].getName() == variable)
                         {
                             Fvariables[i].addFuzzySet(Fset);
-                            Fset.displayInfo();
+                            // Fset.displayInfo();
                         }
                     }
                 }
@@ -589,17 +595,19 @@ int main()
                 {
                     ch2 = true;
                     Fuzzy.addVariables(Fvariables);
-                    for (int i = 0; i < Fuzzy.getVariables().size(); i++)
-                    {
-                        cout << "fuzzy set info" << endl;
-                        Fuzzy.getVariables()[i].displayInfo();
-                    }
+                    // for (int i = 0; i < Fuzzy.getVariables().size(); i++)
+                    // {
+                    //     cout << "fuzzy set info" << endl;
+                    //     Fuzzy.getVariables()[i].displayInfo();
+                    // }
                 }
             }
             else if (choice == 3 && !ch3 && ch2)
             {
                 string rule, word, name;
                 bool then = false, outSet1 = false;
+                vector<string> var1, op, outVar;
+                vector<pair<string, double>> set1, outSet;
                 while (getline(cin, rule))
                 {
                     if (rule == "x")
@@ -607,14 +615,11 @@ int main()
                         break;
                     }
                     istringstream stream(rule);
-                    vector<string> var1, op, outVar;
-                    vector<pair<string, double>> set1, outSet;
                     vector<FuzzyVariable> fuzzy_variables = Fuzzy.getVariables();
-
                     while (stream >> word)
                     {
 
-                        cout << "word " << word << endl;
+                        // cout << "word " << word << endl;
                         if (word == "then" || word == "=>")
                         {
                             then = true;
@@ -631,7 +636,7 @@ int main()
                                     var1.push_back(word);
                                     name = word;
 
-                                    cout << "var1 " << word << endl;
+                                    // cout << "var1 " << word << endl;
                                     break;
                                 }
                             }
@@ -649,11 +654,11 @@ int main()
                                 {
                                     if (word == fuzzy_sets[j].variable && name == fuzzy_variables[i].getName())
                                     {
-                                        cout << "Fuzzyset info " << endl;
+                                        // cout << "Fuzzyset info " << endl;
                                         fuzzy_sets[j].displayInfo();
                                         set1.push_back({word, val});
 
-                                        cout << "set1 " << word << endl;
+                                        // cout << "set1 " << word << endl;
                                         break;
                                     }
                                 }
@@ -661,7 +666,7 @@ int main()
                             if (word == "or" || word == "and" || word == "and_not" || word == "or_not")
                             {
                                 op.push_back(word);
-                                cout << "op " << word << endl;
+                                //  cout << "op " << word << endl;
                             }
                         }
                         else
@@ -672,7 +677,7 @@ int main()
                                 {
                                     outVar.push_back(word);
                                     name = word;
-                                    cout << "outVar " << word << endl;
+                                    // cout << "outVar " << word << endl;
                                     break;
                                 }
                             }
@@ -694,7 +699,7 @@ int main()
                                     {
                                         outSet.push_back({word, val});
                                         outSet1 = true;
-                                        cout << "outset1 " << word << endl;
+                                        // cout << "outset1 " << word << endl;
                                         break;
                                     }
                                 }
@@ -707,6 +712,11 @@ int main()
                                 Frule.displayInfo();
                                 then = false;
                                 outSet1 = false;
+                                var1.clear();
+                                set1.clear();
+                                op.clear();
+                                outVar.clear();
+                                outSet.clear();
                             }
                         }
                     }
@@ -734,35 +744,36 @@ int main()
                         }
                     }
                     Fuzzy.Fuzzification();
-                    Fuzzy.displayfuzz();
+                    //Fuzzy.displayfuzz();
                     Fuzzy.Inference();
-                    Fuzzy.displayInf();
+                    //Fuzzy.displayInf();
                     Fuzzy.getCentroides();
                     Fuzzy.Defuzzification();
                     cout << "ANSWERRRRRRRRRRR " << Fuzzy.getoutput()[0] << endl;
+
                 }
                 else
                 {
                     cout << "CANNOT START THE SIMULATION! Please add the fuzzy sets and rules first.  " << endl;
                 }
-                cout << "fuzzy info  " << endl;
+                //    // cout << "fuzzy info  " << endl;
 
-                Fuzzy.displayInfo();
-                cout << "fuzzy varibles  " << endl;
-                for (int i = 0; i < Fuzzy.getVariables().size(); i++)
-                {
-                    Fuzzy.getVariables()[i].displayInfo();
-                    cout << "fuzzy sets  " << endl;
-                    for (int j = 0; j < Fuzzy.getVariables()[i].getFuzzySets().size(); j++)
-                    {
-                        Fuzzy.getVariables()[i].getFuzzySets()[j].displayInfo();
-                    }
-                }
-                cout << "fuzzy rules  " << endl;
-                for (int i = 0; i < Fuzzy.getFuzzyRules().size(); i++)
-                {
-                    Fuzzy.getFuzzyRules()[i].displayInfo();
-                }
+                //     Fuzzy.displayInfo();
+                //     //cout << "fuzzy varibles  " << endl;
+                //     for (int i = 0; i < Fuzzy.getVariables().size(); i++)
+                //     {
+                //         Fuzzy.getVariables()[i].displayInfo();
+                //         //cout << "fuzzy sets  " << endl;
+                //         for (int j = 0; j < Fuzzy.getVariables()[i].getFuzzySets().size(); j++)
+                //         {
+                //             Fuzzy.getVariables()[i].getFuzzySets()[j].displayInfo();
+                //         }
+                //     }
+                //     //cout << "fuzzy rules  " << endl;
+                //     for (int i = 0; i < Fuzzy.getFuzzyRules().size(); i++)
+                //     {
+                //         Fuzzy.getFuzzyRules()[i].displayInfo();
+                //     }
                 // return 0;
             }
         }
