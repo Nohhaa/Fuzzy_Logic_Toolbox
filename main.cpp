@@ -104,6 +104,7 @@ private:
     double lowerRange;
     double upperRange;
     vector<FuzzySet> FuzzySets;
+    vector<pair<string,double>> Centriodes;
 
 public:
     // Constructor
@@ -115,6 +116,7 @@ public:
     double getUpperRange() const { return upperRange; }
 
     vector<FuzzySet> &getFuzzySets() { return FuzzySets; }
+    vector<pair<string,double>>&getCentroids() { return Centriodes; }
 
     void setName(string nam) { name = nam; }
     void setType(string typ) { type = typ; }
@@ -124,6 +126,10 @@ public:
     void addFuzzySet(const FuzzySet &FuzzySet)
     {
         FuzzySets.push_back(FuzzySet);
+    }
+    void addCentroid(const   vector<pair<string,double>> &cent)
+    {
+        Centriodes=cent;
     }
 
     // Member function to display information
@@ -144,7 +150,7 @@ private:
     vector<pair<string, double>> crispvalues;
     vector<FuzzyRules> Rules;
     vector<pair<pair<string, string>, double>> Fuzz;
-    // vector<double> values;
+    vector<double> output;
     vector<pair<string, double>> Inf;
 
 public:
@@ -153,6 +159,7 @@ public:
 
     vector<FuzzyVariable> &getVariables() { return variables; }
     vector<FuzzyRules> &getFuzzyRules() { return Rules; }
+    vector<double> &getoutput() { return output; }
 
     void addFuzzyRules(const vector<FuzzyRules> &Rule)
     {
@@ -172,6 +179,23 @@ public:
     {
         cout << "Fuzzy System: " << name << endl;
         cout << "Description: " << description << endl;
+        for (int i = 0; i < crispvalues.size(); i++) {
+            cout << "crispvalues variable: " << crispvalues[i].first << endl;
+            cout << "crispvalues value: " << crispvalues[i].second<< endl;
+        }
+    }
+    void displayfuzz() const
+    {
+        for (int i = 0; i < Fuzz.size(); i++) {
+            cout << "Fuzzy variable: " << Fuzz[i].first.first << endl;
+            cout << "Fuzzy set: " << Fuzz[i].first.second << endl;
+            cout << "Fuzzy value: " << Fuzz[i].second<< endl;}
+    }
+    void displayInf() const
+    {
+        for (int i = 0; i < Inf.size(); i++) {
+            cout << "Fuzzy set: " << Inf[i].first << endl;
+            cout << "Fuzzy value: " << Fuzz[i].second<< endl;}
     }
     void Fuzzification()
     {
@@ -366,6 +390,55 @@ public:
                 Inf.push_back({outset[0].first, Final3});
             }
         }
+    }
+    void getCentroides()
+    {
+        for (int i = 0; i < variables.size(); i++) {
+            if (variables[i].getType() == "OUT") {
+                vector<pair<string,double>> centroid;
+                double total=0;
+                vector<FuzzySet> fset = variables[i].getFuzzySets();
+                for (int j = 0; j < fset.size(); j++)
+                {
+                     if(fset[j].type=="TRI")
+                     {
+                         total+=(fset[j].v1+fset[j].v2+fset[j].v3)/3;
+                         centroid.push_back({fset[j].set,total});
+                     }
+                     else
+                     {
+                         total+=(fset[j].v1+fset[j].v2+fset[j].v3+fset[j].v4)/4;
+                         centroid.push_back({fset[j].set,total});
+                     }
+                }
+                variables[i].addCentroid(centroid);
+
+            }
+        }
+
+    }
+
+    vector<double> Defuzzification() {
+        double ans=0;
+        for (int i = 0; i < variables.size(); i++) {
+            if (variables[i].getType() == "OUT") {
+                double total1 = 0,total2=0;
+                vector<pair<string, double>> centroid = variables[i].getCentroids();
+                for (int j = 0; j < Inf.size(); j++) {
+                    total2+=Inf[j].second;
+                    for (int k = 0; k < centroid.size(); k++) {
+                        if (Inf[j].first==centroid[k].first)
+                        {
+                            total1+=(Inf[j].second)*(centroid[k].second);
+                        }
+                    }
+                }
+                ans=total1/total2;
+                output.push_back(ans);
+            }
+
+        }
+        return output;
     }
 };
 
@@ -644,11 +717,38 @@ int main()
                             Fuzzy.addcrisp(var, crisp);
                         }
                     }
+                    Fuzzy.Fuzzification();
+                    Fuzzy.displayfuzz();
+                    Fuzzy.Inference();
+                    Fuzzy.displayInf();
+                    Fuzzy.getCentroides();
+                    Fuzzy.Defuzzification();
+                    cout<<"ANSWERRRRRRRRRRR "<<Fuzzy.getoutput()[0]<<endl;
                 }
                 else
                 {
                     cout << "CANNOT START THE SIMULATION! Please add the fuzzy sets and rules first.  " << endl;
                 }
+                cout << "fuzzy info  " << endl;
+
+                Fuzzy.displayInfo();
+                cout << "fuzzy varibles  " << endl;
+                for (int i = 0; i < Fuzzy.getVariables().size(); i++)
+                {
+                    Fuzzy.getVariables()[i].displayInfo();
+                    cout << "fuzzy sets  " << endl;
+                    for (int j = 0; j < Fuzzy.getVariables()[i].getFuzzySets().size(); j++)
+                    {
+                        Fuzzy.getVariables()[i].getFuzzySets()[j].displayInfo();
+                    }
+                }
+                cout << "fuzzy rules  " << endl;
+                for (int i = 0; i < Fuzzy.getFuzzyRules().size(); i++) {
+                    Fuzzy.getFuzzyRules()[i].displayInfo();
+
+                }
+
+
             }
         }
     }
