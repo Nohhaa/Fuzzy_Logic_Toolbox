@@ -15,27 +15,25 @@ double getfuzz(double crisp, double x1, double y1, double x2, double y2)
     return y;
 }
 
-// Trapezoidal fuzzy set fuzzification function
 double trapezoidalFuzzification(double x, double a, double b, double c, double d)
 {
     double slope;
     double y;
-    // (a,b) (d,c)
+
     slope = (c - b) / (d - a);
-    // Y = mx + c
+
     double k = b - slope * a;
     y = slope * x + k;
     return y;
 }
 
-// AND Operator -> returning the minimal value.
 double AND(double x, double y)
 {
     if (x < y)
         return x;
     return y;
 }
-// OR Operator -> returning the maximal value
+
 double OR(double x, double y)
 {
     if (x > y)
@@ -47,11 +45,10 @@ struct FuzzyRules
 {
     vector<string> variables;
     vector<pair<string, double>> sets;
-    vector<string> ops; // Operator ("AND", "OR", "NOT".)
+    vector<string> ops;
     vector<string> outVariables;
     vector<pair<string, double>> outSets;
 
-    // Constructor
     FuzzyRules() {}
     FuzzyRules(const vector<string> &variable, const vector<pair<string, double>> &set, const vector<string> &operatorType,
                const vector<string> &outVariable, vector<pair<string, double>> &s2)
@@ -78,10 +75,9 @@ struct FuzzySet
 {
     string variable;
     string set;
-    string type;           // "TRI" for triangle, "TRAP" for trapezoid
-    double v1, v2, v3, v4; // Parameters defining the fuzzy set
+    string type;
+    double v1, v2, v3, v4;
 
-    // Constructor
     FuzzySet() {}
     FuzzySet(const string &setvariable, const string &setset, const string &setType, double setA, double setB, double setC, double setD)
         : variable(setvariable), set(setset), type(setType), v1(setA), v2(setB), v3(setC), v4(setD) {}
@@ -100,14 +96,13 @@ class FuzzyVariable
 {
 private:
     string name;
-    string type; // "IN" for input, "OUT" for output
+    string type;
     double lowerRange;
     double upperRange;
     vector<FuzzySet> FuzzySets;
     vector<pair<string, double>> Centriodes;
 
 public:
-    // Constructor
     FuzzyVariable() {}
 
     string getName() const { return name; }
@@ -132,7 +127,6 @@ public:
         Centriodes = cent;
     }
 
-    // Member function to display information
     void displayInfo() const
     {
         cout << "Fuzzy Variable: " << name << endl;
@@ -253,7 +247,7 @@ public:
             }
         }
     }
-    // under development
+
     void Inference()
     {
         string var, set;
@@ -262,22 +256,20 @@ public:
         double value;
         for (int i = 0; i < Rules.size(); i++)
         {
-            FuzzyRules rule = Rules[i]; // rule
+            FuzzyRules rule = Rules[i];
             vector<double> values;
-            vector<string> ops = rule.ops; // and or and_not or_not
+            vector<string> ops = rule.ops;
             vector<pair<string, double>> outset = rule.outSets;
             for (int j = 0; j < rule.variables.size(); j++)
             {
                 var = rule.variables[j];
                 set = rule.sets[j].first;
                 setint = rule.sets[j].second;
-                // cout << var << " " << set << endl;
+
                 bool found = false;
                 for (int k = 0; k < Fuzz.size(); k++)
                 {
-                    // cout << "---------------------------------------" << endl;
-                    // cout << Fuzz[k].first.first << " " << Fuzz[k].first.second << endl;
-                    // cout << "---------------------------------------" << endl;
+
                     if (Fuzz[k].first.first == var && Fuzz[k].first.second == set)
                     {
 
@@ -324,9 +316,6 @@ public:
                     if (outset[0].second == 0)
                         Final = 1 - Final;
                 }
-                // cout << "-------------------" << endl;
-                // cout << Value << " " << Value2 << " " << oper << " " << Final << endl;
-                // cout << "-------------------" << endl;
 
                 Inf.push_back({outset[0].first, Final});
             }
@@ -394,11 +383,6 @@ public:
                 if (outset[0].second == 0)
                     Final3 = 1 - Final3;
                 Inf.push_back({outset[0].first, Final3});
-                // cout << "AHNA FL RULES L KBERA : ";
-                // cout << Value << " " << oper1 << " " << Value2 << " " << Final1 << endl;
-                // cout << Value3 << " " << oper3 << " " << Value4 << " " << Final2 << endl;
-                // cout << oper2 << endl;
-                // cout << Final3 << endl;
             }
         }
     }
@@ -413,8 +397,7 @@ public:
                 vector<FuzzySet> fset = variables[i].getFuzzySets();
                 for (int j = 0; j < fset.size(); j++)
                 {
-                    // cout<<"fadya : ";
-                    // cout<<fset[j].variable<<endl;
+
                     if (fset[j].type == "TRI")
                     {
                         total = (fset[j].v1 + fset[j].v2 + fset[j].v3) / 3;
@@ -427,11 +410,6 @@ public:
                     }
                 }
                 variables[i].addCentroid(centroid);
-                // cout<<"bos kda 3l cent: "<<endl;
-                // for (int j = 0; j < centroid.size(); j++)
-                // {
-                //     cout<<centroid[j].first<<" "<<centroid[j].second<<endl;
-                // }
             }
         }
     }
@@ -496,7 +474,7 @@ int main()
             discription += line;
             ss++;
         }
-        // initialize fuzzy
+
         FuzzySystem Fuzzy(name, discription);
         vector<FuzzyVariable> Fvariables;
         vector<FuzzyRules> Frules;
@@ -543,8 +521,6 @@ int main()
                     Fvariables.push_back(Fvariable);
                     ch1 = true;
                 }
-                // cout<<"variables info"<<endl;
-                // Fvariable.displayInfo();
             }
             else if (choice == 2 && !ch2)
             {
@@ -586,7 +562,6 @@ int main()
                         if (Fvariables[i].getName() == variable)
                         {
                             Fvariables[i].addFuzzySet(Fset);
-                            // Fset.displayInfo();
                         }
                     }
                 }
@@ -595,11 +570,6 @@ int main()
                 {
                     ch2 = true;
                     Fuzzy.addVariables(Fvariables);
-                    // for (int i = 0; i < Fuzzy.getVariables().size(); i++)
-                    // {
-                    //     cout << "fuzzy set info" << endl;
-                    //     Fuzzy.getVariables()[i].displayInfo();
-                    // }
                 }
             }
             else if (choice == 3 && !ch3 && ch2)
@@ -619,7 +589,6 @@ int main()
                     while (stream >> word)
                     {
 
-                        // cout << "word " << word << endl;
                         if (word == "then" || word == "=>")
                         {
                             then = true;
@@ -636,7 +605,6 @@ int main()
                                     var1.push_back(word);
                                     name = word;
 
-                                    // cout << "var1 " << word << endl;
                                     break;
                                 }
                             }
@@ -654,11 +622,10 @@ int main()
                                 {
                                     if (word == fuzzy_sets[j].variable && name == fuzzy_variables[i].getName())
                                     {
-                                        // cout << "Fuzzyset info " << endl;
+
                                         fuzzy_sets[j].displayInfo();
                                         set1.push_back({word, val});
 
-                                        // cout << "set1 " << word << endl;
                                         break;
                                     }
                                 }
@@ -666,7 +633,6 @@ int main()
                             if (word == "or" || word == "and" || word == "and_not" || word == "or_not")
                             {
                                 op.push_back(word);
-                                //  cout << "op " << word << endl;
                             }
                         }
                         else
@@ -677,7 +643,7 @@ int main()
                                 {
                                     outVar.push_back(word);
                                     name = word;
-                                    // cout << "outVar " << word << endl;
+
                                     break;
                                 }
                             }
@@ -699,7 +665,7 @@ int main()
                                     {
                                         outSet.push_back({word, val});
                                         outSet1 = true;
-                                        // cout << "outset1 " << word << endl;
+
                                         break;
                                     }
                                 }
@@ -743,78 +709,43 @@ int main()
                             Fuzzy.addcrisp(var, crisp);
                         }
                     }
+
+                    cout << "Running the simulation… " << endl;
                     Fuzzy.Fuzzification();
-                    //Fuzzy.displayfuzz();
+                    cout << "Fuzzification => done " << endl;
                     Fuzzy.Inference();
-                    //Fuzzy.displayInf();
+                    cout << "Inference => done " << endl;
                     Fuzzy.getCentroides();
                     Fuzzy.Defuzzification();
-                    cout << "ANSWERRRRRRRRRRR " << Fuzzy.getoutput()[0] << endl;
-
+                    cout << "Defuzzification => done " << endl;
+                    string ans;
+                    string ri;
+                    for (int k = 0; k < fuzzy_variables.size(); k++)
+                    {
+                        if (fuzzy_variables[k].getType() != "OUT")
+                            continue;
+                        ri = fuzzy_variables[k].getName();
+                        vector<pair<string, double>> cent = fuzzy_variables[k].getCentroids();
+                        double mini = 105;
+                        cout<<cent.size()<<endl;
+                        for (int z = 0; z < cent.size(); z++)
+                        {
+                            cout<<cent[z].first<<" "<<endl;
+                            if (mini > abs(cent[z].second - Fuzzy.getoutput()[0]))
+                            {
+                                mini = abs(cent[z].second - Fuzzy.getoutput()[0]);
+                                ans = cent[z].first;
+                            }
+                        }
+                    }
+                    cout << "The predicted " << ri << " is " << ans << " (" << Fuzzy.getoutput()[0] << ").";
                 }
                 else
                 {
                     cout << "CANNOT START THE SIMULATION! Please add the fuzzy sets and rules first.  " << endl;
                 }
-                //    // cout << "fuzzy info  " << endl;
-
-                //     Fuzzy.displayInfo();
-                //     //cout << "fuzzy varibles  " << endl;
-                //     for (int i = 0; i < Fuzzy.getVariables().size(); i++)
-                //     {
-                //         Fuzzy.getVariables()[i].displayInfo();
-                //         //cout << "fuzzy sets  " << endl;
-                //         for (int j = 0; j < Fuzzy.getVariables()[i].getFuzzySets().size(); j++)
-                //         {
-                //             Fuzzy.getVariables()[i].getFuzzySets()[j].displayInfo();
-                //         }
-                //     }
-                //     //cout << "fuzzy rules  " << endl;
-                //     for (int i = 0; i < Fuzzy.getFuzzyRules().size(); i++)
-                //     {
-                //         Fuzzy.getFuzzyRules()[i].displayInfo();
-                //     }
-                // return 0;
             }
         }
     }
     return 0;
 }
-/*
-
-Project Risk Estimation
-The problem is to estimate the risk level of a project based on the project
-funding and the technical experience of the project’s team members.
-
-proj_funding IN 0 100
-exp_level IN 0 60
-risk OUT 0 100
-x
-
-exp_level
-
-beginner TRI  0 15 30
-intermediate TRI 15 30 45
-expert TRI 30 60 60
-x
- proj_funding
-very_low TRAP 0 0 10 30
-low TRAP 10 30 40 60
-medium TRAP 40 60 70 90
-high TRAP 70 90 100 100
-x
-
- risk
-
-low TRI 0 25 50
-normal TRI 25 50 75
-high TRI 50 100 100
-x
-
-proj_funding high or exp_level expert => risk low
-proj_funding medium and exp_level intermediate => risk normal
-proj_funding medium and exp_level beginner => risk normal
-proj_funding low and exp_level beginner => risk high
-proj_funding very_low and_not exp_level expert => risk high
-x
- */
