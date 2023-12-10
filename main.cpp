@@ -717,7 +717,6 @@ int main()
                         ri = fuzzy_variables[k].getName();
                         vector<pair<string, double>> cent = fuzzy_variables[k].getCentroids();
                         double mini = 105;
-                        cout << cent.size() << endl;
                         for (int z = 0; z < cent.size(); z++)
                         {
 
