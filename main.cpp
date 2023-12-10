@@ -93,6 +93,8 @@ private:
 public:
     FuzzyVariable() {}
 
+    ~FuzzyVariable() {}
+
     string getName() const { return name; }
     string getType() const { return type; }
     double getLowerRange() const { return lowerRange; }
@@ -139,6 +141,7 @@ private:
 public:
     FuzzySystem(const string &systemName, const string &systemDescription)
         : name(systemName), description(systemDescription) {}
+    ~FuzzySystem(){}
 
     vector<FuzzyVariable> &getVariables() { return variables; }
     vector<FuzzyRules> &getFuzzyRules() { return Rules; }
@@ -433,308 +436,273 @@ public:
 
 int main()
 {
-    int start, choice;
-    string menu = "1", name, discription, line;
-    cout << "Fuzzy Logic Toolbox\n"
-            "===================="
-         << endl;
-    cout << "1- Create a new fuzzy system \n"
-            "2- Quit"
-         << endl;
-    cout << "------------------------------------------------ " << endl;
-    while (cin >> start)
+    int start;
+
+
+    bool N=true;
+    while (N)
     {
+        cout << "Fuzzy Logic Toolbox\n"
+                "===================="
+             << endl;
+        cout << "1- Create a new fuzzy system \n"
+                "2- Quit"
+             << endl;
+        cout << "------------------------------------------------ " << endl;
+        bool M;
+        cin >> start;
+        int choice;
+        string menu = "1", name, discription, line;
         int set_count = 0;
-        bool ch1, ch2, ch3, ch4;
+        bool ch1= false, ch2=false, ch3=false, ch4=false;
         if (start == 2)
         {
+            N= false;
             break;
         }
-        cout << "Enter the system name and a brief description: " << endl;
-        cout << "------------------------------------------------ " << endl;
-        getline(cin, name);
-        int ss = 0;
-        while (getline(cin, line))
-        {
-            if (ss == 2)
-            {
-                break;
-            }
-            discription += line;
-            ss++;
-        }
+        else {
+            M = true;
 
-        FuzzySystem Fuzzy(name, discription);
-        vector<FuzzyVariable> Fvariables;
-        vector<FuzzyRules> Frules;
-
-        while (true)
-        {
-            cout << "\n Main Menu: " << endl;
-            cout << "==========  " << endl;
-            cout << "1- Add variables.  " << endl;
-            cout << "2- Add fuzzy sets to an existing variable.  " << endl;
-            cout << "3- Add rules.  " << endl;
-            cout << "4- Run the simulation on crisp values. " << endl;
-
-            cin >> menu;
-            cout << "menu " << menu << endl;
-            if (menu == "close")
-            {
-                break;
-            }
-            else
-            {
-                choice = stoi(menu);
-            }
-            if (choice == 1 && !ch1)
-            {
-                cout << "Enter the variable name, type (IN/OUT) and range ([lower, upper]):\n"
-                        "(Press x to finish) "
-                     << endl;
-                string variable, type;
-                int range1, range2;
-                while (cin >> variable)
-                {
-                    if (variable == "x")
-                    {
-                        break;
-                    }
-                    FuzzyVariable Fvariable;
-                    cin >> type >> range1 >> range2;
-
-                    Fvariable.setName(variable);
-                    Fvariable.setType(type);
-                    Fvariable.setLowerRange(range1);
-                    Fvariable.setUpperRange(range2);
-                    Fvariables.push_back(Fvariable);
-                    ch1 = true;
+            cout << "Enter the system name and a brief description: " << endl;
+            cout << "------------------------------------------------ " << endl;
+            getline(cin, name);
+            int ss = 0;
+            while (getline(cin, line)) {
+                discription += line;
+                if (ss == 2) {
+                    break;
                 }
-            }
-            else if (choice == 2 && !ch2)
-            {
-                cout << "Enter the variable name:  " << endl;
-                cout << "--------------------------  " << endl;
-                string variable, set, type;
-                int val1, val2, val3, val4;
-                cin >> variable;
-                FuzzySet Fset;
-                cout << "Enter the fuzzy set name, type (TRI/TRAP) and values: (Press x to finish)   " << endl;
-                cout << "-------------------------------------------------------------------------  " << endl;
-                while (cin >> set)
-                {
-                    if (set == "x")
-                    {
-                        break;
-                    }
-                    cin >> type;
-                    Fset.variable = set;
-                    Fset.type = type;
-                    if (type == "TRI")
-                    {
-                        cin >> val1 >> val2 >> val3;
-                        Fset.v1 = val1;
-                        Fset.v2 = val2;
-                        Fset.v3 = val3;
-                    }
-                    else if (type == "TRAP")
-                    {
-                        cin >> val1 >> val2 >> val3 >> val4;
-                        Fset.v1 = val1;
-                        Fset.v2 = val2;
-                        Fset.v3 = val3;
-                        Fset.v4 = val4;
-                    }
 
-                    for (int i = 0; i < Fvariables.size(); i++)
-                    {
-                        if (Fvariables[i].getName() == variable)
-                        {
-                            Fvariables[i].addFuzzySet(Fset);
+                ss++;
+            }
+
+            FuzzySystem Fuzzy(name, discription);
+            vector<FuzzyVariable> Fvariables;
+            vector<FuzzyRules> Frules;
+
+
+            while (M) {
+                cout << "\n Main Menu: " << endl;
+                cout << "==========  " << endl;
+                cout << "1- Add variables.  " << endl;
+                cout << "2- Add fuzzy sets to an existing variable.  " << endl;
+                cout << "3- Add rules.  " << endl;
+                cout << "4- Run the simulation on crisp values. " << endl;
+
+                cin >> menu;
+                cout << "menu " << menu << endl;
+                if (menu == "close") {
+                    M = false;
+                    break;
+                } else {
+                    choice = stoi(menu);
+
+                    if (choice == 1 && !ch1) {
+                        cout << "Enter the variable name, type (IN/OUT) and range ([lower, upper]):\n"
+                                "(Press x to finish) "
+                             << endl;
+                        string variable, type;
+                        int range1, range2;
+                        while (cin >> variable) {
+                            if (variable == "x") {
+                                break;
+                            }
+                            FuzzyVariable Fvariable;
+                            cin >> type >> range1 >> range2;
+
+                            Fvariable.setName(variable);
+                            Fvariable.setType(type);
+                            Fvariable.setLowerRange(range1);
+                            Fvariable.setUpperRange(range2);
+                            Fvariables.push_back(Fvariable);
+                            ch1 = true;
                         }
-                    }
-                }
-                set_count++;
-                if (set_count == Fvariables.size())
-                {
-                    ch2 = true;
-                    Fuzzy.addVariables(Fvariables);
-                }
-            }
-            else if (choice == 3 && !ch3 && ch2)
-            {
-                string rule, word, name;
-                bool then = false, outSet1 = false;
-                vector<string> var1, op, outVar;
-                vector<pair<string, double>> set1, outSet;
-                while (getline(cin, rule))
-                {
-                    if (rule == "x")
-                    {
-                        break;
-                    }
-                    istringstream stream(rule);
-                    vector<FuzzyVariable> fuzzy_variables = Fuzzy.getVariables();
-                    while (stream >> word)
-                    {
+                    } else if (choice == 2 && !ch2) {
+                        cout << "Enter the variable name:  " << endl;
+                        cout << "--------------------------  " << endl;
+                        string variable, set, type;
+                        int val1, val2, val3, val4;
+                        cin >> variable;
+                        FuzzySet Fset;
+                        cout << "Enter the fuzzy set name, type (TRI/TRAP) and values: (Press x to finish)   " << endl;
+                        cout << "-------------------------------------------------------------------------  " << endl;
+                        while (cin >> set) {
+                            if (set == "x") {
+                                break;
+                            }
+                            cin >> type;
+                            Fset.variable = set;
+                            Fset.type = type;
+                            if (type == "TRI") {
+                                cin >> val1 >> val2 >> val3;
+                                Fset.v1 = val1;
+                                Fset.v2 = val2;
+                                Fset.v3 = val3;
+                            } else if (type == "TRAP") {
+                                cin >> val1 >> val2 >> val3 >> val4;
+                                Fset.v1 = val1;
+                                Fset.v2 = val2;
+                                Fset.v3 = val3;
+                                Fset.v4 = val4;
+                            }
 
-                        if (word == "then" || word == "=>")
-                        {
-                            then = true;
-                        }
-
-                        if (!then)
-                        {
-
-                            for (int i = 0; i < fuzzy_variables.size(); i++)
-                            {
-                                if ((word == fuzzy_variables[i].getName()) &&
-                                    fuzzy_variables[i].getType() == "IN")
-                                {
-                                    var1.push_back(word);
-                                    name = word;
-
-                                    break;
+                            for (int i = 0; i < Fvariables.size(); i++) {
+                                if (Fvariables[i].getName() == variable) {
+                                    Fvariables[i].addFuzzySet(Fset);
                                 }
                             }
-                            int val = 1;
-
-                            if (word == "not")
-                            {
-                                val = 0;
-                                stream >> word;
+                        }
+                        set_count++;
+                        if (set_count == Fvariables.size()) {
+                            ch2 = true;
+                            Fuzzy.addVariables(Fvariables);
+                        }
+                    } else if (choice == 3 && !ch3 && ch2) {
+                        string rule, word, name;
+                        bool then = false, outSet1 = false;
+                        vector<string> var1, op, outVar;
+                        vector<pair<string, double>> set1, outSet;
+                        while (getline(cin, rule)) {
+                            if (rule == "x") {
+                                break;
                             }
-                            for (int i = 0; i < fuzzy_variables.size(); i++)
-                            {
-                                vector<FuzzySet> fuzzy_sets = fuzzy_variables[i].getFuzzySets();
-                                for (int j = 0; j < fuzzy_sets.size(); j++)
-                                {
-                                    if (word == fuzzy_sets[j].variable && name == fuzzy_variables[i].getName())
-                                    {
+                            istringstream stream(rule);
+                            vector<FuzzyVariable> fuzzy_variables = Fuzzy.getVariables();
+                            while (stream >> word) {
 
-                                        fuzzy_sets[j].displayInfo();
-                                        set1.push_back({word, val});
+                                if (word == "then" || word == "=>") {
+                                    then = true;
+                                }
 
-                                        break;
+                                if (!then) {
+
+                                    for (int i = 0; i < fuzzy_variables.size(); i++) {
+                                        if ((word == fuzzy_variables[i].getName()) &&
+                                            fuzzy_variables[i].getType() == "IN") {
+                                            var1.push_back(word);
+                                            name = word;
+
+                                            break;
+                                        }
+                                    }
+                                    int val = 1;
+
+                                    if (word == "not") {
+                                        val = 0;
+                                        stream >> word;
+                                    }
+                                    for (int i = 0; i < fuzzy_variables.size(); i++) {
+                                        vector<FuzzySet> fuzzy_sets = fuzzy_variables[i].getFuzzySets();
+                                        for (int j = 0; j < fuzzy_sets.size(); j++) {
+                                            if (word == fuzzy_sets[j].variable &&
+                                                name == fuzzy_variables[i].getName()) {
+
+                                                set1.push_back({word, val});
+
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (word == "or" || word == "and" || word == "and_not" || word == "or_not") {
+                                        op.push_back(word);
+                                    }
+                                } else {
+                                    for (int i = 0; i < fuzzy_variables.size(); i++) {
+                                        if (word == fuzzy_variables[i].getName()) {
+                                            outVar.push_back(word);
+                                            name = word;
+
+                                            break;
+                                        }
+                                    }
+
+                                    int val = 1;
+
+                                    if (word == "not") {
+                                        val = 0;
+                                        stream >> word;
+                                    }
+                                    for (int i = 0; i < fuzzy_variables.size(); i++) {
+                                        vector<FuzzySet> fuzzy_sets = fuzzy_variables[i].getFuzzySets();
+
+                                        for (int j = 0; j < fuzzy_sets.size(); j++) {
+                                            if (word == fuzzy_sets[j].variable &&
+                                                name == fuzzy_variables[i].getName()) {
+                                                outSet.push_back({word, val});
+                                                outSet1 = true;
+
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (outSet1) {
+                                        FuzzyRules Frule(var1, set1, op, outVar, outSet);
+                                        Frules.push_back(Frule);
+                                        then = false;
+                                        outSet1 = false;
+                                        var1.clear();
+                                        set1.clear();
+                                        op.clear();
+                                        outVar.clear();
+                                        outSet.clear();
                                     }
                                 }
                             }
-                            if (word == "or" || word == "and" || word == "and_not" || word == "or_not")
-                            {
-                                op.push_back(word);
-                            }
                         }
-                        else
-                        {
-                            for (int i = 0; i < fuzzy_variables.size(); i++)
-                            {
-                                if (word == fuzzy_variables[i].getName())
-                                {
-                                    outVar.push_back(word);
-                                    name = word;
-
-                                    break;
+                        Fuzzy.addFuzzyRules(Frules);
+                        ch3 = true;
+                    } else if (choice == 4) {
+                        if (ch1 && ch2 && ch3) {
+                            cout << "Enter the crisp values: " << endl;
+                            cout << "----------------------- " << endl;
+                            vector<FuzzyVariable> fuzzy_variables = Fuzzy.getVariables();
+                            string var;
+                            double crisp;
+                            for (int i = 0; i < fuzzy_variables.size(); i++) {
+                                if (fuzzy_variables[i].getType() == "IN") {
+                                    var = fuzzy_variables[i].getName();
+                                    cout << var << ": " << endl;
+                                    cin >> crisp;
+                                    Fuzzy.addcrisp(var, crisp);
                                 }
                             }
 
-                            int val = 1;
+                            cout << "Running the simulation… " << endl;
+                            Fuzzy.Fuzzification();
+                            cout << "Fuzzification => done " << endl;
+                            Fuzzy.Inference();
+                            cout << "Inference => done " << endl;
+                            Fuzzy.getCentroides();
+                            Fuzzy.Defuzzification();
+                            fuzzy_variables = Fuzzy.getVariables();
+                            cout << "Defuzzification => done " << endl;
+                            string ans;
+                            string ri;
+                            for (int k = 0; k < fuzzy_variables.size(); k++) {
+                                if (fuzzy_variables[k].getType() != "OUT")
+                                    continue;
+                                ri = fuzzy_variables[k].getName();
+                                vector<pair<string, double>> cent = fuzzy_variables[k].getCentroids();
+                                double mini = 105;
+                                for (int z = 0; z < cent.size(); z++) {
 
-                            if (word == "not")
-                            {
-                                val = 0;
-                                stream >> word;
-                            }
-                            for (int i = 0; i < fuzzy_variables.size(); i++)
-                            {
-                                vector<FuzzySet> fuzzy_sets = fuzzy_variables[i].getFuzzySets();
-
-                                for (int j = 0; j < fuzzy_sets.size(); j++)
-                                {
-                                    if (word == fuzzy_sets[j].variable && name == fuzzy_variables[i].getName())
-                                    {
-                                        outSet.push_back({word, val});
-                                        outSet1 = true;
-
-                                        break;
+                                    if (mini > abs(cent[z].second - Fuzzy.getoutput()[0])) {
+                                        mini = abs(cent[z].second - Fuzzy.getoutput()[0]);
+                                        ans = cent[z].first;
                                     }
                                 }
                             }
-
-                            if (outSet1)
-                            {
-                                FuzzyRules Frule(var1, set1, op, outVar, outSet);
-                                Frules.push_back(Frule);
-                                Frule.displayInfo();
-                                then = false;
-                                outSet1 = false;
-                                var1.clear();
-                                set1.clear();
-                                op.clear();
-                                outVar.clear();
-                                outSet.clear();
-                            }
+                            cout << "The predicted " << ri << " is " << ans << " (" << Fuzzy.getoutput()[0] << ").";
+                        } else {
+                            cout << "CANNOT START THE SIMULATION! Please add the fuzzy sets and rules first.  " << endl;
                         }
                     }
-                }
-                Fuzzy.addFuzzyRules(Frules);
-                ch3 = true;
-            }
-            else if (choice == 4)
-            {
-                if (ch1 && ch2 && ch3)
-                {
-                    cout << "Enter the crisp values: " << endl;
-                    cout << "----------------------- " << endl;
-                    vector<FuzzyVariable> fuzzy_variables = Fuzzy.getVariables();
-                    string var;
-                    double crisp;
-                    for (int i = 0; i < fuzzy_variables.size(); i++)
-                    {
-                        if (fuzzy_variables[i].getType() == "IN")
-                        {
-                            var = fuzzy_variables[i].getName();
-                            cout << var << ": " << endl;
-                            cin >> crisp;
-                            Fuzzy.addcrisp(var, crisp);
-                        }
-                    }
-
-                    cout << "Running the simulation… " << endl;
-                    Fuzzy.Fuzzification();
-                    cout << "Fuzzification => done " << endl;
-                    Fuzzy.Inference();
-                    cout << "Inference => done " << endl;
-                    Fuzzy.getCentroides();
-                    Fuzzy.Defuzzification();
-                    fuzzy_variables = Fuzzy.getVariables();
-                    cout << "Defuzzification => done " << endl;
-                    string ans;
-                    string ri;
-                    for (int k = 0; k < fuzzy_variables.size(); k++)
-                    {
-                        if (fuzzy_variables[k].getType() != "OUT")
-                            continue;
-                        ri = fuzzy_variables[k].getName();
-                        vector<pair<string, double>> cent = fuzzy_variables[k].getCentroids();
-                        double mini = 105;
-                        for (int z = 0; z < cent.size(); z++)
-                        {
-
-                            if (mini > abs(cent[z].second - Fuzzy.getoutput()[0]))
-                            {
-                                mini = abs(cent[z].second - Fuzzy.getoutput()[0]);
-                                ans = cent[z].first;
-                            }
-                        }
-                    }
-                    cout << "The predicted " << ri << " is " << ans << " (" << Fuzzy.getoutput()[0] << ").";
-                }
-                else
-                {
-                    cout << "CANNOT START THE SIMULATION! Please add the fuzzy sets and rules first.  " << endl;
                 }
             }
+
         }
+
     }
     return 0;
 }
