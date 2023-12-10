@@ -15,18 +15,6 @@ double getfuzz(double crisp, double x1, double y1, double x2, double y2)
     return y;
 }
 
-double trapezoidalFuzzification(double x, double a, double b, double c, double d)
-{
-    double slope;
-    double y;
-
-    slope = (c - b) / (d - a);
-
-    double k = b - slope * a;
-    y = slope * x + k;
-    return y;
-}
-
 double AND(double x, double y)
 {
     if (x < y)
@@ -122,8 +110,9 @@ public:
     {
         FuzzySets.push_back(FuzzySet);
     }
-    void addCentroid(const vector<pair<string, double>> &cent)
+    void addCentroid(const vector<pair<string, double>> cent)
     {
+
         Centriodes = cent;
     }
 
@@ -717,6 +706,7 @@ int main()
                     cout << "Inference => done " << endl;
                     Fuzzy.getCentroides();
                     Fuzzy.Defuzzification();
+                    fuzzy_variables = Fuzzy.getVariables();
                     cout << "Defuzzification => done " << endl;
                     string ans;
                     string ri;
@@ -727,10 +717,10 @@ int main()
                         ri = fuzzy_variables[k].getName();
                         vector<pair<string, double>> cent = fuzzy_variables[k].getCentroids();
                         double mini = 105;
-                        cout<<cent.size()<<endl;
+                        cout << cent.size() << endl;
                         for (int z = 0; z < cent.size(); z++)
                         {
-                            cout<<cent[z].first<<" "<<endl;
+
                             if (mini > abs(cent[z].second - Fuzzy.getoutput()[0]))
                             {
                                 mini = abs(cent[z].second - Fuzzy.getoutput()[0]);
