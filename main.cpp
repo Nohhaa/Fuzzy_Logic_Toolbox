@@ -246,28 +246,23 @@ public:
         double setint, outsetint;
         double val1, val2;
         double value;
-        for (int i = 0; i < Rules.size(); i++)
-        {
+        for (int i = 0; i < Rules.size(); i++) {
             FuzzyRules rule = Rules[i];
             vector<double> values;
             vector<string> ops = rule.ops;
             vector<pair<string, double>> outset = rule.outSets;
-            for (int j = 0; j < rule.variables.size(); j++)
-            {
+            for (int j = 0; j < rule.variables.size(); j++) {
                 var = rule.variables[j];
                 set = rule.sets[j].first;
                 setint = rule.sets[j].second;
 
                 bool found = false;
-                for (int k = 0; k < Fuzz.size(); k++)
-                {
+                for (int k = 0; k < Fuzz.size(); k++) {
 
-                    if (Fuzz[k].first.first == var && Fuzz[k].first.second == set)
-                    {
+                    if (Fuzz[k].first.first == var && Fuzz[k].first.second == set) {
 
                         val1 = Fuzz[k].second;
-                        if (setint == 0)
-                        {
+                        if (setint == 0) {
                             val1 = 1 - val1;
                         }
                         values.push_back(val1);
@@ -278,104 +273,77 @@ public:
                 if (!found)
                     values.push_back(0);
             }
-            if (ops.size() == 1)
+            vector<string> ops2;
+            vector<double> values2;
+            int v=0;
+
+            for (int j = 0; j < ops.size(); j++) {
+                double vall;
+                double Value = values[v];
+                double Value2 = values[v + 1];
+                if (ops[j] == "and") {
+                    vall = AND(Value, Value2);
+                    values[j+1]=vall;
+                    values2.push_back(vall);
+                    v++;
+                } else if (ops[j] == "and_not") {
+                    vall = AND(Value, (1.0 - Value2));
+                    values[j+1]=vall;
+                    values2.push_back(vall);
+                    v++;
+                } else {
+                    v++;
+                    ops2.push_back(ops[j]);
+                    if(j==0)
+                    {
+                        values2.push_back(Value);
+                        if((j==ops.size()-1)||(ops.size()>j+1&&(ops[j+1]=="or" ||ops[j+1]=="or_not") ))
+                        {
+
+                            values2.push_back(Value2);
+                        }
+                    }
+                    else
+                    {
+                        if(j==ops.size()-1||(ops.size()>j+1&&(ops[j+1]=="or" ||ops[j+1]=="or_not") ))
+                        {
+                            values2.push_back(Value2);
+                        }
+
+                    }
+                }
+            }
+
+            double final=0;
+            if( values2.size()==0)
             {
-                double Value = values[0];
-                double Value2 = values[1];
-                string oper = ops[0];
-                double Final;
-                if (oper == "and")
-                {
-                    Final = AND(Value, Value2);
-                    if (outset[0].second == 0)
-                        Final = 1 - Final;
-                }
-                else if (oper == "and_not")
-                {
-                    Final = AND(Value, 1 - Value2);
-                    if (outset[0].second == 0)
-                        Final = 1 - Final;
-                }
-                else if (oper == "or")
-                {
-                    Final = OR(Value, Value2);
-                    if (outset[0].second == 0)
-                        Final = 1 - Final;
-                }
-                else
-                {
-                    Final = OR(Value, 1 - Value2);
-                    if (outset[0].second == 0)
-                        Final = 1 - Final;
+                final=values[values.size()-1];
+            }
+            for (int j = 0; j < ops2.size(); j++) {
+                double vall;
+                double Value = values2[j];
+                double Value2 = values2[j + 1];
+
+                if (ops[j] == "or") {
+                    vall = OR(Value, Value2);
+                    values2[j+1]=vall;
+                } else if (ops[j] == "or_not") {
+                    vall = OR(Value, 1 - Value2);
+                    values2[j+1]=vall;
                 }
 
-                Inf.push_back({outset[0].first, Final});
-            }
-            else if (ops.size() == 3)
-            {
-                double Value = values[0];
-                double Value2 = values[1];
-                double Value3 = values[2];
-                double Value4 = values[3];
-                double Final1;
-                double Final2;
-                string oper1 = ops[0];
-                string oper2 = ops[1];
-                string oper3 = ops[2];
-                if (oper1 == "and")
-                {
-                    Final1 = AND(Value, Value2);
-                }
-                else if (oper1 == "and_not")
-                {
-                    Final1 = AND(Value, 1 - Value2);
-                }
-                else if (oper1 == "or")
-                {
-                    Final1 = OR(Value, Value2);
-                }
-                else
-                {
-                    Final1 = OR(Value, 1 - Value2);
-                }
 
-                if (oper3 == "and")
-                {
-                    Final2 = AND(Value3, Value4);
-                }
-                else if (oper3 == "and_not")
-                {
-                    Final2 = AND(Value3, 1 - Value4);
-                }
-                else if (oper3 == "or")
-                {
-                    Final2 = OR(Value3, Value4);
-                }
-                else
-                {
-                    Final2 = OR(Value3, 1 - Value4);
-                }
-                double Final3;
-                if (oper2 == "and")
-                {
-                    Final3 = AND(Final1, Final2);
-                }
-                else if (oper2 == "and_not")
-                {
-                    Final3 = AND(Final1, Final2);
-                }
-                else if (oper2 == "or")
-                {
-                    Final3 = OR(Final1, Final2);
-                }
-                else
-                {
-                    Final3 = OR(Final1, Final2);
-                }
-                if (outset[0].second == 0)
-                    Final3 = 1 - Final3;
-                Inf.push_back({outset[0].first, Final3});
             }
+
+            if(values2.size()>0)
+            { final=values2[values2.size() - 1]; }
+            if(outset[0].second==0)
+            {
+                final=1-final;
+            }
+
+                Inf.push_back({outset[0].first, final});
+
         }
     }
     void getCentroides()
