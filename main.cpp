@@ -275,24 +275,22 @@ public:
             }
             vector<string> ops2;
             vector<double> values2;
-            int v=0;
-
             for (int j = 0; j < ops.size(); j++) {
                 double vall;
-                double Value = values[v];
-                double Value2 = values[v + 1];
+                double Value = values[j];
+                double Value2 = values[j + 1];
                 if (ops[j] == "and") {
                     vall = AND(Value, Value2);
                     values[j+1]=vall;
                     values2.push_back(vall);
-                    v++;
+
                 } else if (ops[j] == "and_not") {
                     vall = AND(Value, (1.0 - Value2));
                     values[j+1]=vall;
                     values2.push_back(vall);
-                    v++;
+
                 } else {
-                    v++;
+
                     ops2.push_back(ops[j]);
                     if(j==0)
                     {
@@ -315,6 +313,7 @@ public:
             }
 
             double final=0;
+
             if( values2.size()==0)
             {
                 final=values[values.size()-1];
@@ -324,10 +323,10 @@ public:
                 double Value = values2[j];
                 double Value2 = values2[j + 1];
 
-                if (ops[j] == "or") {
+                if (ops2[j] == "or") {
                     vall = OR(Value, Value2);
                     values2[j+1]=vall;
-                } else if (ops[j] == "or_not") {
+                } else if (ops2[j] == "or_not") {
                     vall = OR(Value, 1 - Value2);
                     values2[j+1]=vall;
                 }
